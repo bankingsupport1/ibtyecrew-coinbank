@@ -1,0 +1,1897 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎮 IBYTECREW Coin Bank - Premium Edition</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+:root {
+  --primary: #6366f1;
+  --secondary: #8b5cf6;
+  --success: #10b981;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --dark: #1e293b;
+  --light: #f1f5f9;
+}
+
+body {
+  overflow-x: hidden;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+}
+
+/* ==================== LOADING SCREEN ==================== */
+#loadingScreen {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  color: white;
+}
+
+.loading-logo {
+  font-size: 4rem;
+  animation: bounce 1.5s infinite;
+  margin-bottom: 1rem;
+}
+
+.loading-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(90deg, #60a5fa, #a78bfa, #f472b6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient 3s ease infinite;
+}
+
+.loading-subtitle {
+  font-size: 1rem;
+  opacity: 0.8;
+  margin-bottom: 2rem;
+}
+
+.progress-container {
+  width: 300px;
+  height: 6px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #60a5fa, #a78bfa);
+  width: 0%;
+  transition: width 0.3s ease;
+  box-shadow: 0 0 20px rgba(96, 165, 250, 0.5);
+}
+
+.loading-status {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  opacity: 0.7;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes gradient {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* ==================== PARTICLES BACKGROUND ==================== */
+.particles {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: white;
+  border-radius: 50%;
+  opacity: 0.3;
+  animation: float linear infinite;
+}
+
+@keyframes float {
+  0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+  10% { opacity: 0.3; }
+  90% { opacity: 0.3; }
+  100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+}
+
+/* ==================== NOTIFICATION ==================== */
+.notification {
+  position: fixed;
+  top: 20px;
+  right: -400px;
+  padding: 1rem 1.5rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  z-index: 10001;
+  animation: slideInRight 0.4s ease forwards;
+  max-width: 350px;
+}
+
+.notification.show {
+  animation: slideInRight 0.4s ease forwards;
+}
+
+.notification.hide {
+  animation: slideOutRight 0.4s ease forwards;
+}
+
+.notification-icon {
+  font-size: 1.5rem;
+}
+
+.notification-content {
+  flex: 1;
+}
+
+.notification-title {
+  font-weight: 700;
+  margin-bottom: 0.2rem;
+  color: var(--dark);
+}
+
+.notification-message {
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.notification.success { border-left: 4px solid var(--success); }
+.notification.error { border-left: 4px solid var(--danger); }
+.notification.warning { border-left: 4px solid var(--warning); }
+.notification.info { border-left: 4px solid var(--primary); }
+
+@keyframes slideInRight {
+  to { right: 20px; }
+}
+
+@keyframes slideOutRight {
+  to { right: -400px; }
+}
+
+/* ==================== AUTH SCREEN ==================== */
+#authScreen {
+  display: none;
+  min-height: 100vh;
+  padding: 2rem;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+.auth-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
+  padding: 3rem;
+  width: 100%;
+  max-width: 450px;
+  box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+  animation: fadeInUp 0.6s ease;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.auth-logo {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+  animation: rotate 20s linear infinite;
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.auth-title {
+  font-size: 1.8rem;
+  color: var(--dark);
+  margin-bottom: 0.3rem;
+}
+
+.auth-subtitle {
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+.form-group {
+  margin-bottom: 1.2rem;
+}
+
+.form-label {
+  display: block;
+  font-weight: 600;
+  color: var(--dark);
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.9rem 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+  transform: translateY(-2px);
+}
+
+.btn {
+  width: 100%;
+  padding: 1rem;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 0.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.btn:active::before {
+  width: 300px;
+  height: 300px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+}
+
+.btn-secondary {
+  background: #f1f5f9;
+  color: var(--dark);
+}
+
+.btn-secondary:hover {
+  background: #e2e8f0;
+}
+
+.auth-link {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: #64748b;
+}
+
+.auth-link a {
+  color: var(--primary);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+/* ==================== DASHBOARD ==================== */
+#dashboard {
+  display: none;
+  min-height: 100vh;
+  padding: 1.5rem;
+  position: relative;
+  z-index: 2;
+}
+
+.dashboard-header {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  animation: slideDown 0.5s ease;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-avatar {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  animation: pulse 2s ease infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.user-details h3 {
+  color: var(--dark);
+  margin-bottom: 0.2rem;
+}
+
+.user-balance {
+  color: var(--primary);
+  font-weight: 700;
+  font-size: 1.3rem;
+}
+
+.logout-btn {
+  background: var(--danger);
+  color: white;
+  border: none;
+  padding: 0.7rem 1.5rem;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3);
+}
+
+.welcome-banner {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  padding: 2rem;
+  border-radius: 20px;
+  margin-bottom: 1.5rem;
+  position: relative;
+  overflow: hidden;
+  animation: fadeIn 0.6s ease 0.2s both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.welcome-banner::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  animation: rotate 15s linear infinite;
+}
+
+.welcome-content {
+  position: relative;
+  z-index: 1;
+}
+
+.welcome-title {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.close-welcome {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(255,255,255,0.2);
+  border: none;
+  color: white;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
+  z-index: 2;
+}
+
+.close-welcome:hover {
+  background: rgba(255,255,255,0.3);
+  transform: rotate(90deg);
+}
+
+.actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.action-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 1.8rem;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+  animation: fadeIn 0.6s ease both;
+}
+
+.action-card:nth-child(1) { animation-delay: 0.1s; }
+.action-card:nth-child(2) { animation-delay: 0.2s; }
+.action-card:nth-child(3) { animation-delay: 0.3s; }
+.action-card:nth-child(4) { animation-delay: 0.4s; }
+
+.action-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.action-card:hover::before {
+  left: 100%;
+}
+
+.action-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+.action-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  display: inline-block;
+  animation: bounce 2s ease infinite;
+}
+
+.action-title {
+  font-size: 1.3rem;
+  color: var(--dark);
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+
+.action-description {
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.stat-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-align: center;
+  animation: fadeIn 0.6s ease both;
+}
+
+.stat-card:nth-child(1) { animation-delay: 0.5s; }
+.stat-card:nth-child(2) { animation-delay: 0.6s; }
+.stat-card:nth-child(3) { animation-delay: 0.7s; }
+
+.stat-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.stat-value {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 0.3rem;
+}
+
+.stat-label {
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+/* ==================== MODAL ==================== */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 24px;
+  padding: 2.5rem;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: modalSlide 0.4s ease;
+  box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+}
+
+@keyframes modalSlide {
+  from { opacity: 0; transform: scale(0.9) translateY(-20px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.modal-icon {
+  font-size: 3.5rem;
+  margin-bottom: 0.5rem;
+  animation: bounce 2s ease infinite;
+}
+
+.modal-title {
+  font-size: 1.8rem;
+  color: var(--dark);
+  margin-bottom: 0.3rem;
+}
+
+.modal-subtitle {
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+.code-display {
+  background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+  border: 2px dashed var(--primary);
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-align: center;
+  margin: 1.5rem 0;
+  position: relative;
+}
+
+.code-display code {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: 3px;
+  font-family: 'Courier New', monospace;
+}
+
+.copy-btn {
+  margin-top: 1rem;
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 0.6rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.copy-btn:hover {
+  background: var(--secondary);
+  transform: scale(1.05);
+}
+
+/* ==================== STORE ==================== */
+#storeScreen {
+  display: none;
+  min-height: 100vh;
+  padding: 1.5rem;
+  position: relative;
+  z-index: 2;
+}
+
+.store-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  animation: slideDown 0.5s ease;
+}
+
+.back-btn {
+  background: rgba(255, 255, 255, 0.95);
+  border: none;
+  padding: 0.8rem 1.2rem;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.back-btn:hover {
+  transform: translateX(-5px);
+}
+
+.store-title {
+  color: white;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.store-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.store-item {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  border: 3px solid transparent;
+  position: relative;
+  overflow: hidden;
+  animation: fadeIn 0.6s ease both;
+}
+
+.store-item:nth-child(1) { animation-delay: 0.1s; }
+.store-item:nth-child(2) { animation-delay: 0.2s; }
+.store-item:nth-child(3) { animation-delay: 0.3s; }
+.store-item:nth-child(4) { animation-delay: 0.4s; }
+
+.store-item::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(from 0deg, transparent, var(--primary), transparent 30%);
+  animation: rotate 4s linear infinite;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.store-item:hover::before {
+  opacity: 0.1;
+}
+
+.store-item:hover {
+  transform: translateY(-10px) scale(1.03);
+  border-color: var(--primary);
+  box-shadow: 0 20px 40px rgba(99, 102, 241, 0.3);
+}
+
+.store-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.store-item-title {
+  font-size: 1.5rem;
+  color: var(--dark);
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+  position: relative;
+  z-index: 1;
+}
+
+.store-price {
+  font-size: 1.3rem;
+  color: var(--primary);
+  font-weight: 700;
+  position: relative;
+  z-index: 1;
+}
+
+.store-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: var(--success);
+  color: white;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  z-index: 1;
+}
+
+/* ==================== FOOTER ==================== */
+footer {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: white;
+  font-size: 0.9rem;
+  opacity: 0.8;
+  position: relative;
+  z-index: 2;
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 768px) {
+  .dashboard-header {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .actions-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .store-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 2rem 1.5rem;
+  }
+  
+  .store-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- Particles Background -->
+<div class="particles" id="particles"></div>
+
+<!-- ==================== LOADING SCREEN ==================== -->
+<div id="loadingScreen">
+  <div class="loading-logo">🎮</div>
+  <h1 class="loading-title">IBYTECREW</h1>
+  <p class="loading-subtitle">Coin Bank System</p>
+  <div class="progress-container">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+  <p class="loading-status" id="loadingStatus">Initializing...</p>
+</div>
+
+<!-- ==================== AUTH SCREEN ==================== -->
+<div id="authScreen">
+  <!-- LOGIN -->
+  <div class="auth-card" id="loginCard">
+    <div class="auth-header">
+      <div class="auth-logo">🎮</div>
+      <h2 class="auth-title">Welcome Back!</h2>
+      <p class="auth-subtitle">Login to access your coin bank</p>
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">Username</label>
+      <input type="text" class="form-input" id="loginUsername" placeholder="Enter your username">
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input type="password" class="form-input" id="loginPassword" placeholder="Enter your password">
+    </div>
+    
+    <button class="btn btn-primary" onclick="handleLogin()">🔐 Login</button>
+    <button class="btn btn-secondary" onclick="showSignup()">📝 Create Account</button>
+    
+    <div class="auth-link">
+      New to IBYTECREW? <a onclick="showSignup()">Sign up now</a>
+    </div>
+  </div>
+
+  <!-- SIGNUP -->
+  <div class="auth-card" id="signupCard" style="display:none">
+    <div class="auth-header">
+      <div class="auth-logo">✨</div>
+      <h2 class="auth-title">Create Account</h2>
+      <p class="auth-subtitle">Join the IBYTECREW community</p>
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">Username</label>
+      <input type="text" class="form-input" id="signupUsername" placeholder="Choose a unique username">
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input type="password" class="form-input" id="signupPassword" placeholder="Create a strong password">
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">Confirm Password</label>
+      <input type="password" class="form-input" id="signupPassword2" placeholder="Re-enter password">
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">Security PIN (6 digits)</label>
+      <input type="password" class="form-input" id="signupPin" placeholder="Create 6-digit PIN" maxlength="6">
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">Birth Date</label>
+      <input type="date" class="form-input" id="signupBirth">
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">Language</label>
+      <select class="form-input" id="signupLang">
+        <option>🇮🇩 Bahasa Indonesia</option>
+        <option>🇺🇸 English</option>
+        <option>🇸🇦 العربية (Arabic)</option>
+      </select>
+    </div>
+    
+    <button class="btn btn-primary" onclick="handleSignup()">🚀 Create Account</button>
+    <button class="btn btn-secondary" onclick="showLogin()">⬅ Back to Login</button>
+    
+    <div class="auth-link">
+      Already have an account? <a onclick="showLogin()">Login here</a>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== DASHBOARD ==================== -->
+<div id="dashboard">
+  <div class="dashboard-header">
+    <div class="user-info">
+      <div class="user-avatar">👤</div>
+      <div class="user-details">
+        <h3 id="userName">User</h3>
+        <div class="user-balance"><span id="coinBalance">0</span> Coins</div>
+      </div>
+    </div>
+    <button class="logout-btn" onclick="handleLogout()">🚪 Logout</button>
+  </div>
+
+  <div class="welcome-banner" id="welcomeBanner">
+    <button class="close-welcome" onclick="this.parentElement.remove()">×</button>
+    <div class="welcome-content">
+      <h2 class="welcome-title">Welcome Back! 👋</h2>
+      <p id="welcomeMessage"></p>
+    </div>
+  </div>
+
+  <div class="actions-grid">
+    <div class="action-card" onclick="openTransferModal()">
+      <div class="action-icon">💸</div>
+      <h3 class="action-title">Transfer Coins</h3>
+      <p class="action-description">Send coins to friends instantly</p>
+    </div>
+
+    <div class="action-card" onclick="openRedeemModal()">
+      <div class="action-icon">🎟️</div>
+      <h3 class="action-title">Redeem Code</h3>
+      <p class="action-description">Enter code to receive coins</p>
+    </div>
+
+    <div class="action-card" onclick="openStore()">
+      <div class="action-icon">🛒</div>
+      <h3 class="action-title">Robux Store</h3>
+      <p class="action-description">Exchange coins for Robux</p>
+    </div>
+
+    <div class="action-card" onclick="openHistory()">
+      <div class="action-icon">📊</div>
+      <h3 class="action-title">Transaction History</h3>
+      <p class="action-description">View your recent activities</p>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">📈</div>
+      <div class="stat-value" id="totalTransfers">0</div>
+      <div class="stat-label">Total Transfers</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">💎</div>
+      <div class="stat-value" id="totalSpent">0</div>
+      <div class="stat-label">Total Spent</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">⭐</div>
+      <div class="stat-value" id="accountAge">0</div>
+      <div class="stat-label">Days Active</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== STORE SCREEN ==================== -->
+<div id="storeScreen">
+  <div class="store-header">
+    <button class="back-btn" onclick="closeStore()">⬅ Back</button>
+    <h2 class="store-title">🛒 Robux Exchange Store</h2>
+  </div>
+
+  <div class="store-grid">
+    <div class="store-item" onclick="buyItem(22000, '80 Robux')">
+      <div class="store-badge">POPULAR</div>
+      <div class="store-icon">💎</div>
+      <h3 class="store-item-title">80 Robux</h3>
+      <p class="store-price">22,000 Coins</p>
+    </div>
+
+    <div class="store-item" onclick="buyItem(110000, '500 Robux')">
+      <div class="store-badge">BEST VALUE</div>
+      <div class="store-icon">💎</div>
+      <h3 class="store-item-title">500 Robux</h3>
+      <p class="store-price">110,000 Coins</p>
+    </div>
+
+    <div class="store-item" onclick="buyItem(205000, '1000 Robux')">
+      <div class="store-icon">💎</div>
+      <h3 class="store-item-title">1000 Robux</h3>
+      <p class="store-price">205,000 Coins</p>
+    </div>
+
+    <div class="store-item" onclick="buyItem(410000, '2000 Robux')">
+      <div class="store-badge">PREMIUM</div>
+      <div class="store-icon">💎</div>
+      <h3 class="store-item-title">2000 Robux</h3>
+      <p class="store-price">410,000 Coins</p>
+    </div>
+  </div>
+
+  <div style="text-align:center; color:white; opacity:0.9; font-size:0.95rem;">
+    💡 Coins can be earned through events or purchased with real money
+  </div>
+</div>
+
+<!-- ==================== TRANSFER MODAL ==================== -->
+<div id="transferModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-icon">💸</div>
+      <h3 class="modal-title">Transfer Coins</h3>
+      <p class="modal-subtitle">Send coins to another user</p>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Recipient Username</label>
+      <input type="text" class="form-input" id="transferRecipient" placeholder="Enter recipient's username">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Amount</label>
+      <input type="number" class="form-input" id="transferAmount" placeholder="Enter amount to transfer">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Your Security PIN</label>
+      <input type="password" class="form-input" id="transferPin" placeholder="Enter your 6-digit PIN" maxlength="6">
+    </div>
+
+    <button class="btn btn-primary" onclick="handleTransfer()">💸 Send Transfer</button>
+    <button class="btn btn-secondary" onclick="closeTransferModal()">❌ Cancel</button>
+  </div>
+</div>
+
+<!-- ==================== CODE DISPLAY MODAL ==================== -->
+<div id="codeModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-icon">✅</div>
+      <h3 class="modal-title">Transfer Created!</h3>
+      <p class="modal-subtitle">Share this code with the recipient</p>
+    </div>
+
+    <div class="code-display">
+      <code id="generatedCode">IBC-XXXXX</code>
+      <button class="copy-btn" onclick="copyCode()">📋 Copy Code</button>
+    </div>
+
+    <p style="text-align:center; color:#64748b; font-size:0.9rem; margin-bottom:1rem;">
+      The recipient must redeem this code to receive the coins
+    </p>
+
+    <button class="btn btn-primary" onclick="closeCodeModal()">✅ Done</button>
+  </div>
+</div>
+
+<!-- ==================== REDEEM MODAL ==================== -->
+<div id="redeemModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-icon">🎟️</div>
+      <h3 class="modal-title">Redeem Code</h3>
+      <p class="modal-subtitle">Enter your redeem code below</p>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Redeem Code</label>
+      <input type="text" class="form-input" id="redeemCodeInput" placeholder="IBC-XXXXX" style="text-transform:uppercase; text-align:center; font-weight:700; letter-spacing:2px;">
+    </div>
+
+    <button class="btn btn-primary" onclick="handleRedeem()">🎁 Redeem Now</button>
+    <button class="btn btn-secondary" onclick="closeRedeemModal()">❌ Cancel</button>
+  </div>
+</div>
+
+<!-- ==================== HISTORY MODAL ==================== -->
+<div id="historyModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-icon">📊</div>
+      <h3 class="modal-title">Transaction History</h3>
+      <p class="modal-subtitle">Your recent activities</p>
+    </div>
+
+    <div id="historyList" style="max-height:400px; overflow-y:auto;">
+      <p style="text-align:center; color:#64748b; padding:2rem;">No transactions yet</p>
+    </div>
+
+    <button class="btn btn-secondary" onclick="closeHistory()">Close</button>
+  </div>
+</div>
+
+<!-- ==================== ADMIN ACCESS BUTTON ==================== -->
+<div id="adminAccessBtn" style="position:fixed; bottom:20px; left:20px; z-index:9998; cursor:pointer; background:rgba(0,0,0,0.7); color:white; width:50px; height:50px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.5rem; transition:all 0.3s ease; backdrop-filter:blur(10px);" onclick="openAdminAuth()" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+  🔐
+</div>
+
+<!-- ==================== ADMIN AUTH MODAL ==================== -->
+<div id="adminAuthModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-icon">👑</div>
+      <h3 class="modal-title">Admin Access</h3>
+      <p class="modal-subtitle">Enter admin password</p>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Admin Password</label>
+      <input type="password" class="form-input" id="adminPassword" placeholder="Enter admin password">
+    </div>
+
+    <button class="btn btn-primary" onclick="verifyAdmin()">🔓 Access Admin Panel</button>
+    <button class="btn btn-secondary" onclick="closeAdminAuth()">❌ Cancel</button>
+  </div>
+</div>
+
+<!-- ==================== ADMIN PANEL MODAL ==================== -->
+<div id="adminPanelModal" class="modal">
+  <div class="modal-content" style="max-width:600px;">
+    <div class="modal-header">
+      <div class="modal-icon">👑</div>
+      <h3 class="modal-title">Admin Panel</h3>
+      <p class="modal-subtitle">Manage user coins</p>
+    </div>
+
+    <div style="background:linear-gradient(135deg, #f59e0b, #ef4444); color:white; padding:1rem; border-radius:12px; margin-bottom:1.5rem; text-align:center;">
+      <div style="font-size:0.9rem; opacity:0.9;">⚠️ Admin Mode Active</div>
+      <div style="font-size:1.2rem; font-weight:700; margin-top:0.3rem;">Unlimited Power</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Target Username</label>
+      <input type="text" class="form-input" id="adminTargetUser" placeholder="Enter username">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Coins Amount</label>
+      <input type="number" class="form-input" id="adminCoinsAmount" placeholder="Enter amount (e.g., 1000000)">
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-bottom:1rem;">
+      <button class="btn btn-primary" onclick="adminAddCoins()">➕ Add Coins</button>
+      <button class="btn" style="background:var(--warning); color:white;" onclick="adminSetCoins()">✏️ Set Coins</button>
+    </div>
+
+    <div style="background:#f1f5f9; padding:1rem; border-radius:12px; margin-bottom:1rem;">
+      <h4 style="margin-bottom:0.5rem; color:var(--dark);">Quick Actions:</h4>
+      <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:0.5rem;">
+        <button class="btn btn-secondary" style="padding:0.5rem; font-size:0.85rem;" onclick="quickAddCoins(10000)">+10K</button>
+        <button class="btn btn-secondary" style="padding:0.5rem; font-size:0.85rem;" onclick="quickAddCoins(100000)">+100K</button>
+        <button class="btn btn-secondary" style="padding:0.5rem; font-size:0.85rem;" onclick="quickAddCoins(1000000)">+1M</button>
+      </div>
+    </div>
+
+    <div style="background:#fee2e2; border:2px solid var(--danger); padding:1rem; border-radius:12px; margin-bottom:1rem;">
+      <h4 style="margin-bottom:0.5rem; color:var(--danger);">⚠️ Danger Zone</h4>
+      <button class="btn btn-danger" onclick="confirmResetDatabase()">🗑️ Reset All Users Data</button>
+    </div>
+
+    <button class="btn btn-secondary" onclick="closeAdminPanel()">Close Panel</button>
+  </div>
+</div>
+
+<footer>
+  © <span id="year"></span> IBYTECREW - Premium Coin Bank System ☁️ | Powered by Firebase
+</footer>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+<script>
+/* ==================== FIREBASE CONFIG ==================== */
+const firebaseConfig = {
+  apiKey: "AIzaSyDNf3i9dBQWxaYePQOzsjC1MwMeL9DZI5M",
+  authDomain: "ibytecrew-coinbank.firebaseapp.com",
+  projectId: "ibytecrew-coinbank",
+  storageBucket: "ibytecrew-coinbank.firebasestorage.app",
+  messagingSenderId: "336961705908",
+  appId: "1:336961705908:web:cf731bcfeb63304b52c4e1",
+  measurementId: "G-1HYH9PXE6T"
+};
+
+const DISCORD_WEBHOOK = "https://discordapp.com/api/webhooks/1444197054493753414/PPdxMlvpY-v0Ap4zC7VSNioQy5ndokWr_T_RnuxqpagIGh5NMNqtFzrQ93hUPdUcyMt2";
+
+const ADMIN_PASSWORD = "Armageddon Nimitz N5 Micro ATXNVIDIA GeForce RTX 5090Ryzen 9 9950X3D Samsung 980 PRO";
+
+/* ==================== GLOBAL STATE ==================== */
+let db;
+let firebaseReady = false;
+let currentUser = null;
+let userCoins = 0;
+let userData = null;
+let userHistory = [];
+
+/* ==================== PARTICLES ANIMATION ==================== */
+function createParticles() {
+  const container = document.getElementById('particles');
+  for(let i = 0; i < 50; i++) {
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+    particle.style.left = Math.random() * 100 + '%';
+    particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+    particle.style.animationDelay = Math.random() * 5 + 's';
+    container.appendChild(particle);
+  }
+}
+createParticles();
+
+/* ==================== UTILITY FUNCTIONS ==================== */
+function showNotification(title, message, type = 'info') {
+  const icons = {
+    success: '✅',
+    error: '❌',
+    warning: '⚠️',
+    info: 'ℹ️'
+  };
+
+  const notif = document.createElement('div');
+  notif.className = `notification ${type}`;
+  notif.innerHTML = `
+    <div class="notification-icon">${icons[type]}</div>
+    <div class="notification-content">
+      <div class="notification-title">${title}</div>
+      <div class="notification-message">${message}</div>
+    </div>
+  `;
+  
+  document.body.appendChild(notif);
+  
+  setTimeout(() => {
+    notif.classList.add('hide');
+    setTimeout(() => notif.remove(), 400);
+  }, 3500);
+}
+
+function generateRedeemCode() {
+  return 'IBC-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+}
+
+async function sendDiscordLog(title, description) {
+  try {
+    await fetch(DISCORD_WEBHOOK, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        embeds: [{
+          title: title,
+          description: description,
+          color: 0x6366f1,
+          timestamp: new Date().toISOString(),
+          footer: { text: 'IBYTECREW Coin Bank Premium' }
+        }]
+      })
+    });
+  } catch(e) {
+    console.error("Discord error:", e);
+  }
+}
+
+function updateCoinDisplay() {
+  document.getElementById('coinBalance').textContent = userCoins.toLocaleString();
+}
+
+async function updateUserCoins(newAmount) {
+  userCoins = newAmount;
+  updateCoinDisplay();
+  if (currentUser && db && firebaseReady) {
+    try {
+      await db.collection('users').doc(currentUser).update({ 
+        coins: newAmount,
+        lastActivity: new Date().toISOString()
+      });
+    } catch(e) {
+      console.error("Update error:", e);
+    }
+  }
+}
+
+async function addToHistory(type, description, amount) {
+  const historyItem = {
+    type: type,
+    description: description,
+    amount: amount,
+    timestamp: new Date().toISOString()
+  };
+  
+  userHistory.unshift(historyItem);
+  
+  if (currentUser && db && firebaseReady) {
+    try {
+      await db.collection('users').doc(currentUser).update({
+        history: firebase.firestore.FieldValue.arrayUnion(historyItem)
+      });
+    } catch(e) {
+      console.error("History error:", e);
+    }
+  }
+}
+
+function updateStats() {
+  if (userData && userData.history) {
+    const transfers = userData.history.filter(h => h.type === 'transfer').length;
+    const spent = userData.history.filter(h => h.type === 'purchase').reduce((sum, h) => sum + h.amount, 0);
+    const created = new Date(userData.createdAt);
+    const days = Math.floor((Date.now() - created.getTime()) / (1000 * 60 * 60 * 24));
+    
+    document.getElementById('totalTransfers').textContent = transfers;
+    document.getElementById('totalSpent').textContent = spent.toLocaleString();
+    document.getElementById('accountAge').textContent = days;
+  }
+}
+
+function copyCode() {
+  const code = document.getElementById('generatedCode').textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    showNotification('Copied!', 'Code copied to clipboard', 'success');
+  });
+}
+
+/* ==================== FIREBASE INITIALIZATION ==================== */
+async function initializeFirebase() {
+  try {
+    document.getElementById('loadingStatus').textContent = 'Connecting to Firebase...';
+    
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
+    
+    await db.collection('_test').doc('ping').set({ timestamp: Date.now() });
+    
+    firebaseReady = true;
+    document.getElementById('loadingStatus').textContent = 'Connected! ✅';
+    console.log("✅ Firebase Ready!");
+    return true;
+  } catch(e) {
+    console.error("❌ Firebase Error:", e);
+    document.getElementById('loadingStatus').textContent = 'Connection failed ⚠️';
+    firebaseReady = false;
+    return false;
+  }
+}
+
+/* ==================== LOADING ANIMATION ==================== */
+async function startLoading() {
+  let progress = 0;
+  const progressBar = document.getElementById('progressBar');
+  
+  const firebasePromise = initializeFirebase();
+  
+  const interval = setInterval(() => {
+    if (progress < 90) {
+      progress += Math.random() * 8;
+      progressBar.style.width = progress + '%';
+    }
+  }, 100);
+  
+  await firebasePromise;
+  
+  clearInterval(interval);
+  progressBar.style.width = '100%';
+  
+  setTimeout(() => {
+    document.getElementById('loadingScreen').style.display = 'none';
+    document.getElementById('authScreen').style.display = 'flex';
+    
+    if (!firebaseReady) {
+      showNotification('Warning', 'Firebase offline. Some features limited.', 'warning');
+    }
+  }, 800);
+}
+
+startLoading();
+
+/* ==================== AUTH FUNCTIONS ==================== */
+function showSignup() {
+  document.getElementById('loginCard').style.display = 'none';
+  document.getElementById('signupCard').style.display = 'block';
+}
+
+function showLogin() {
+  document.getElementById('signupCard').style.display = 'none';
+  document.getElementById('loginCard').style.display = 'block';
+}
+
+async function handleSignup() {
+  if (!firebaseReady) {
+    return showNotification('Error', 'Firebase not ready. Please refresh.', 'error');
+  }
+
+  const username = document.getElementById('signupUsername').value.trim().toLowerCase();
+  const password = document.getElementById('signupPassword').value;
+  const password2 = document.getElementById('signupPassword2').value;
+  const pin = document.getElementById('signupPin').value;
+  const birthdate = document.getElementById('signupBirth').value;
+  const language = document.getElementById('signupLang').value;
+
+  if (!username || !password || !pin || !birthdate) {
+    return showNotification('Error', 'Please fill all fields', 'error');
+  }
+
+  if (password !== password2) {
+    return showNotification('Error', 'Passwords do not match', 'error');
+  }
+
+  if (pin.length !== 6 || isNaN(pin)) {
+    return showNotification('Error', 'PIN must be 6 digits', 'error');
+  }
+
+  const age = new Date().getFullYear() - new Date(birthdate).getFullYear();
+  if (age < 5) {
+    return showNotification('Error', 'Age must be at least 5 years', 'error');
+  }
+
+  try {
+    const userDoc = await db.collection('users').doc(username).get();
+    if (userDoc.exists) {
+      return showNotification('Error', 'Username already exists', 'error');
+    }
+
+    await db.collection('users').doc(username).set({
+      password: password,
+      pin: pin,
+      coins: 0,
+      birthdate: birthdate,
+      language: language,
+      createdAt: new Date().toISOString(),
+      lastActivity: new Date().toISOString(),
+      history: []
+    });
+
+    showNotification('Success!', 'Account created! Please login', 'success');
+    sendDiscordLog('✨ New Account Created', 
+      `**Username:** ${username}\n**Initial Coins:** 0\n**Language:** ${language}`);
+    
+    showLogin();
+    
+    document.getElementById('signupUsername').value = '';
+    document.getElementById('signupPassword').value = '';
+    document.getElementById('signupPassword2').value = '';
+    document.getElementById('signupPin').value = '';
+    document.getElementById('signupBirth').value = '';
+  } catch(e) {
+    showNotification('Error', 'Signup failed: ' + e.message, 'error');
+  }
+}
+
+async function handleLogin() {
+  if (!firebaseReady) {
+    return showNotification('Error', 'Firebase not ready. Please refresh.', 'error');
+  }
+
+  const username = document.getElementById('loginUsername').value.trim().toLowerCase();
+  const password = document.getElementById('loginPassword').value;
+
+  if (!username || !password) {
+    return showNotification('Error', 'Please enter username and password', 'error');
+  }
+
+  try {
+    const userDoc = await db.collection('users').doc(username).get();
+    
+    if (!userDoc.exists) {
+      return showNotification('Error', 'User not found', 'error');
+    }
+
+    const data = userDoc.data();
+    if (data.password !== password) {
+      return showNotification('Error', 'Wrong password', 'error');
+    }
+
+    currentUser = username;
+    userData = data;
+    userCoins = data.coins;
+    userHistory = data.history || [];
+
+    document.getElementById('authScreen').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    document.getElementById('userName').textContent = username;
+    document.getElementById('welcomeMessage').textContent = 
+      `Great to see you again, ${username}! You have ${userCoins.toLocaleString()} coins in your wallet.`;
+    
+    updateCoinDisplay();
+    updateStats();
+
+    sendDiscordLog('🔓 User Login', 
+      `**Username:** ${username}\n**Balance:** ${userCoins.toLocaleString()} coins`);
+    
+    showNotification('Welcome!', 'Login successful', 'success');
+  } catch(e) {
+    showNotification('Error', 'Login failed: ' + e.message, 'error');
+  }
+}
+
+function handleLogout() {
+  currentUser = null;
+  userData = null;
+  userCoins = 0;
+  userHistory = [];
+  
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('authScreen').style.display = 'flex';
+  showLogin();
+  
+  sendDiscordLog('🔒 User Logout', 'User logged out');
+  showNotification('Goodbye!', 'Logged out successfully', 'info');
+}
+
+/* ==================== STORE FUNCTIONS ==================== */
+function openStore() {
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('storeScreen').style.display = 'block';
+}
+
+function closeStore() {
+  document.getElementById('storeScreen').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+}
+
+async function buyItem(cost, itemName) {
+  if (userCoins < cost) {
+    return showNotification('Error', 'Not enough coins!', 'error');
+  }
+
+  if (confirm(`Purchase ${itemName} for ${cost.toLocaleString()} coins?`)) {
+    await updateUserCoins(userCoins - cost);
+    await addToHistory('purchase', `Purchased ${itemName}`, cost);
+    
+    showNotification('Success!', `Purchased ${itemName}!`, 'success');
+    sendDiscordLog('🛒 Store Purchase', 
+      `**User:** ${currentUser}\n**Item:** ${itemName}\n**Cost:** ${cost.toLocaleString()}\n**Remaining:** ${userCoins.toLocaleString()}`);
+    
+    updateStats();
+  }
+}
+
+/* ==================== TRANSFER FUNCTIONS ==================== */
+function openTransferModal() {
+  document.getElementById('transferModal').style.display = 'flex';
+}
+
+function closeTransferModal() {
+  document.getElementById('transferModal').style.display = 'none';
+  document.getElementById('transferRecipient').value = '';
+  document.getElementById('transferAmount').value = '';
+  document.getElementById('transferPin').value = '';
+}
+
+async function handleTransfer() {
+  if (!firebaseReady) {
+    return showNotification('Error', 'Firebase not ready', 'error');
+  }
+
+  const recipient = document.getElementById('transferRecipient').value.trim().toLowerCase();
+  const amount = parseInt(document.getElementById('transferAmount').value);
+  const pin = document.getElementById('transferPin').value;
+
+  if (!recipient || !amount || !pin) {
+    return showNotification('Error', 'Please fill all fields', 'error');
+  }
+
+  if (userData.pin !== pin) {
+    return showNotification('Error', 'Invalid PIN', 'error');
+  }
+
+  if (recipient === currentUser) {
+    return showNotification('Error', 'Cannot transfer to yourself', 'error');
+  }
+
+  if (amount <= 0) {
+    return showNotification('Error', 'Invalid amount', 'error');
+  }
+
+  if (amount > userCoins) {
+    return showNotification('Error', 'Insufficient coins', 'error');
+  }
+
+  try {
+    const recipientDoc = await db.collection('users').doc(recipient).get();
+    if (!recipientDoc.exists) {
+      return showNotification('Error', 'Recipient not found', 'error');
+    }
+
+    const redeemCode = generateRedeemCode();
+
+    await db.collection('redeemCodes').doc(redeemCode).set({
+      amount: amount,
+      from: currentUser,
+      to: recipient,
+      timestamp: new Date().toISOString(),
+      claimed: false
+    });
+
+    await updateUserCoins(userCoins - amount);
+    await addToHistory('transfer', `Transferred to ${recipient}`, amount);
+
+    closeTransferModal();
+    document.getElementById('generatedCode').textContent = redeemCode;
+    document.getElementById('codeModal').style.display = 'flex';
+
+    sendDiscordLog('💸 Transfer Created',
+      `**From:** ${currentUser}\n**To:** ${recipient}\n**Amount:** ${amount.toLocaleString()}\n**Code:** \`${redeemCode}\``);
+    
+    showNotification('Success!', 'Transfer created!', 'success');
+    updateStats();
+  } catch(e) {
+    showNotification('Error', 'Transfer failed: ' + e.message, 'error');
+  }
+}
+
+function closeCodeModal() {
+  document.getElementById('codeModal').style.display = 'none';
+}
+
+/* ==================== REDEEM FUNCTIONS ==================== */
+function openRedeemModal() {
+  document.getElementById('redeemModal').style.display = 'flex';
+}
+
+function closeRedeemModal() {
+  document.getElementById('redeemModal').style.display = 'none';
+  document.getElementById('redeemCodeInput').value = '';
+}
+
+async function handleRedeem() {
+  if (!firebaseReady) {
+    return showNotification('Error', 'Firebase not ready', 'error');
+  }
+
+  const code = document.getElementById('redeemCodeInput').value.trim().toUpperCase();
+
+  if (!code) {
+    return showNotification('Error', 'Please enter a code', 'error');
+  }
+
+  try {
+    const codeDoc = await db.collection('redeemCodes').doc(code).get();
+    
+    if (!codeDoc.exists) {
+      return showNotification('Error', 'Invalid redeem code', 'error');
+    }
+
+    const codeData = codeDoc.data();
+
+    if (codeData.claimed) {
+      return showNotification('Error', 'Code already claimed', 'error');
+    }
+
+    if (codeData.to !== currentUser) {
+      return showNotification('Error', 'This code is not for you', 'error');
+    }
+
+    await updateUserCoins(userCoins + codeData.amount);
+    await addToHistory('redeem', `Redeemed from ${codeData.from}`, codeData.amount);
+
+    await db.collection('redeemCodes').doc(code).update({
+      claimed: true,
+      claimedAt: new Date().toISOString()
+    });
+
+    closeRedeemModal();
+
+    sendDiscordLog('✅ Code Redeemed',
+      `**User:** ${currentUser}\n**Code:** \`${code}\`\n**Amount:** ${codeData.amount.toLocaleString()}\n**From:** ${codeData.from}`);
+
+    showNotification('Success!', `Redeemed ${codeData.amount.toLocaleString()} coins!`, 'success');
+    updateStats();
+  } catch(e) {
+    showNotification('Error', 'Redeem failed: ' + e.message, 'error');
+  }
+}
+
+/* ==================== HISTORY FUNCTIONS ==================== */
+function openHistory() {
+  const historyList = document.getElementById('historyList');
+  
+  if (userHistory.length === 0) {
+    historyList.innerHTML = '<p style="text-align:center; color:#64748b; padding:2rem;">No transactions yet</p>';
+  } else {
+    historyList.innerHTML = userHistory.slice(0, 20).map(h => `
+      <div style="background:#f1f5f9; padding:1rem; border-radius:12px; margin-bottom:0.8rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <div style="font-weight:700; color:var(--dark);">${h.description}</div>
+            <div style="font-size:0.85rem; color:#64748b;">${new Date(h.timestamp).toLocaleString()}</div>
+          </div>
+          <div style="font-weight:700; color:${h.type === 'redeem' ? 'var(--success)' : 'var(--danger)'};">
+            ${h.type === 'redeem' ? '+' : '-'}${h.amount.toLocaleString()}
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+  
+  document.getElementById('historyModal').style.display = 'flex';
+}
+
+function closeHistory() {
+  document.getElementById('historyModal').style.display = 'none';
+}
+
+/* ==================== ADMIN FUNCTIONS ==================== */
+function openAdminAuth() {
+  document.getElementById('adminAuthModal').style.display = 'flex';
+  document.getElementById('adminPassword').value = '';
+}
+
+function closeAdminAuth() {
+  document.getElementById('adminAuthModal').style.display = 'none';
+}
+
+function verifyAdmin() {
+  const inputPassword = document.getElementById('adminPassword').value;
+  
+  if (inputPassword === ADMIN_PASSWORD) {
+    closeAdminAuth();
+    document.getElementById('adminPanelModal').style.display = 'flex';
+    showNotification('Admin Access', 'Welcome, Administrator!', 'success');
+    sendDiscordLog('👑 Admin Panel Accessed', '**Admin logged in to control panel**');
+  } else {
+    showNotification('Access Denied', 'Invalid admin password', 'error');
+  }
+}
+
+function closeAdminPanel() {
+  document.getElementById('adminPanelModal').style.display = 'none';
+  document.getElementById('adminTargetUser').value = '';
+  document.getElementById('adminCoinsAmount').value = '';
+}
+
+async function adminAddCoins() {
+  if (!firebaseReady) {
+    return showNotification('Error', 'Firebase not ready', 'error');
+  }
+
+  const targetUser = document.getElementById('adminTargetUser').value.trim().toLowerCase();
+  const amount = parseInt(document.getElementById('adminCoinsAmount').value);
+
+  if (!targetUser || !amount) {
+    return showNotification('Error', 'Please fill all fields', 'error');
+  }
+
+  if (amount <= 0) {
+    return showNotification('Error', 'Amount must be positive', 'error');
+  }
+
+  try {
+    const userDoc = await db.collection('users').doc(targetUser).get();
+    
+    if (!userDoc.exists) {
+      return showNotification('Error', 'User not found', 'error');
+    }
+
+    const userData = userDoc.data();
+    const newAmount = userData.coins + amount;
+
+    await db.collection('users').doc(targetUser).update({ 
+      coins: newAmount,
+      lastActivity: new Date().toISOString()
+    });
+
+    showNotification('Success!', `Added ${amount.toLocaleString()} coins to ${targetUser}`, 'success');
+    sendDiscordLog('👑 Admin Action - Add Coins', 
+      `**Target User:** ${targetUser}\n**Added:** ${amount.toLocaleString()} coins\n**New Balance:** ${newAmount.toLocaleString()} coins`);
+    
+    // Update current user display if target is current user
+    if (currentUser === targetUser) {
+      userCoins = newAmount;
+      updateCoinDisplay();
+    }
+  } catch(e) {
+    showNotification('Error', 'Failed to add coins: ' + e.message, 'error');
+  }
+}
+
+async function adminSetCoins() {
+  if (!firebaseReady) {
+    return showNotification('Error', 'Firebase not ready', 'error');
+  }
+
+  const targetUser = document.getElementById('adminTargetUser').value.trim().toLowerCase();
+  const amount = parseInt(document.getElementById('adminCoinsAmount').value);
+
+  if (!targetUser || amount === undefined || amount === null) {
+    return showNotification('Error', 'Please fill all fields', 'error');
+  }
+
+  if (amount < 0) {
+    return showNotification('Error', 'Amount cannot be negative', 'error');
+  }
+
+  try {
+    const userDoc = await db.collection('users').doc(targetUser).get();
+    
+    if (!userDoc.exists) {
+      return showNotification('Error', 'User not found', 'error');
+    }
+
+    await db.collection('users').doc(targetUser).update({ 
+      coins: amount,
+      lastActivity: new Date().toISOString()
+    });
+
+    showNotification('Success!', `Set ${targetUser}'s balance to ${amount.toLocaleString()} coins`, 'success');
+    sendDiscordLog('👑 Admin Action - Set Coins', 
+      `**Target User:** ${targetUser}\n**New Balance:** ${amount.toLocaleString()} coins`);
+    
+    // Update current user display if target is current user
+    if (currentUser === targetUser) {
+      userCoins = amount;
+      updateCoinDisplay();
+    }
+  } catch(e) {
+    showNotification('Error', 'Failed to set coins: ' + e.message, 'error');
+  }
+}
+
+async function quickAddCoins(amount) {
+  const targetUser = document.getElementById('adminTargetUser').value.trim().toLowerCase();
+  
+  if (!targetUser) {
+    return showNotification('Error', 'Please enter target username first', 'error');
+  }
+
+  document.getElementById('adminCoinsAmount').value = amount;
+  await adminAddCoins();
+}
+
+async function confirmResetDatabase() {
+  const confirmation = prompt('⚠️ WARNING: This will DELETE ALL USERS!\n\nType "DELETE ALL DATA" to confirm:');
+  
+  if (confirmation === 'DELETE ALL DATA') {
+    const secondConfirm = confirm('Are you ABSOLUTELY SURE? This cannot be undone!');
+    
+    if (secondConfirm) {
+      await resetDatabase();
+    }
+  } else {
+    showNotification('Cancelled', 'Database reset cancelled', 'info');
+  }
+}
+
+async function resetDatabase() {
+  if (!firebaseReady) {
+    return showNotification('Error', 'Firebase not ready', 'error');
+  }
+
+  try {
+    // Get all users
+    const usersSnapshot = await db.collection('users').get();
+    const batch = db.batch();
+    
+    usersSnapshot.forEach(doc => {
+      batch.delete(doc.ref);
+    });
+    
+    // Get all redeem codes
+    const codesSnapshot = await db.collection('redeemCodes').get();
+    codesSnapshot.forEach(doc => {
+      batch.delete(doc.ref);
+    });
+    
+    await batch.commit();
+    
+    showNotification('Success!', 'All data has been reset', 'success');
+    sendDiscordLog('🗑️ Admin Action - Database Reset', 
+      `**Action:** All users and redeem codes deleted\n**Users Deleted:** ${usersSnapshot.size}\n**Codes Deleted:** ${codesSnapshot.size}`);
+    
+    closeAdminPanel();
+    
+    // Logout if user was logged in
+    if (currentUser) {
+      handleLogout();
+    }
+  } catch(e) {
+    showNotification('Error', 'Failed to reset database: ' + e.message, 'error');
+  }
+}
+
+/* ==================== INITIALIZE ==================== */
+document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
